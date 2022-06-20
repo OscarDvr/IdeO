@@ -1,0 +1,58 @@
+inicial = dict() #creamos un diccionario vacio para el nodo inicial
+costos = dict() #creamos un diccionario vacio para cada costo por arista
+
+#Creación de listas y asignación de costos
+'''inputs: nodo inicial
+outputs: costo de nodo inicial'''
+def comienzo(nodo): #definimos una función para el nodo
+    inicial[nodo] = nodo #del diccionario de nodos tomamos uno de ellos que sera el inicial
+    costos[nodo] = 0 #se le asigna su costo
+
+#Busca el nodo inicial y lo retorna
+'''inputs: busqueda del nodo
+outputs: nodo distinto al inicial'''
+def buscar(nodo): #definimos nuestra función para buscar nodos
+    if inicial[nodo] !=nodo : #si el nodo inicial es distinto al nodo tomado
+        inicial[nodo] = buscar(inicial[nodo]) #se debe buscar el nodo inicial
+    return inicial[nodo] #nos regresa el nodo inicial
+
+#Vamos a tomar los nodos con el menor costo de las arista
+'''inputs: nodo inicial, nodo final
+outputs: distancia entre nodos'''
+def distancia(nodo_i, nodo_f): #definimos la distancia para cada nodo
+    raiz_i = buscar(nodo_i) #definimos el nodo raiz que sera el inicial con su busqueda
+    raiz_f = buscar(nodo_f) #definimos el nodo final con su busqueda
+
+#ACICLICO
+    if raiz_i != raiz_f: #corrobora que el *nodo inicial sea distinto al nodo final para no formar ciclos
+        if costos[raiz_i] > costos[raiz_f]: #el costo que almacena el diccionario de costos sea mayor
+            inicial[raiz_f] = raiz_i  #asigna un nodo el nodo de destino a la lista
+        else: #si el nodo inicial es igual al nodo final (ciclo)
+            inicial[raiz_i] = raiz_f
+            if costos[raiz_i] == costos[raiz_f]: #el costo del nodo inicial sera igual que el costo del nodo final
+                costos[raiz_f] += 1 #el costo sera el mismo
+
+'''inputs: recibe una red (diccionario)
+outputs: árbol de peso minimo'''
+def kruskal(red): #definimos nuestra función del algoritmo
+    for nodo in red['nodos']: #aplicamos un ciclo para que cada nodo en la red sea nuestro diccionario de nodos
+        comienzo(nodo) #asignamos el nodo inicial
+    arbol_minimo = list() #transforma nuestro árbol en listas
+    aristas = list(red['aristas']) #asignamos nuestras aristas que sera el (costo, 'nodo inicial','nodo final') en lista
+    aristas.sort() #ordenamos dichas aristas con .sort (menor a mayor)
+    
+    for arista in aristas: #hacemos un ciclo para verificar de arista en arista
+        costo, nodo_i, nodo_f = arista #cada lugar tiene que ser (costo, nodo inicial, nodo final) 
+        if buscar(nodo_i) != buscar(nodo_f): #el nodo que buscamos debe ser distinto al que ya tomamos
+            distancia(nodo_i, nodo_f) #se hace la distancia entre el nodo final y el nodo inicial
+            arbol_minimo.append(arista) #ya ordenadas las distancias las metemos a una lista una por una ya ordenadas
+    return arbol_minimo #nos regresa el arbol de peso minimo como (peso minimo, nodo inicial, nodo final)
+
+    
+
+red_ej = {
+        'nodos': ['A','B','C','D','E','F'], #asiganmos todos los nodos
+        'aristas': [(5,'A','B'),(30,'A','C'),(20,'B','C'),(10,'B','D'),(10,'C','D'),(15,'C','E'),
+                    (5,'D','E'),(15,'E','F'),(20,'D','F')]} #asignamos las aristas como: (costo, 'nodo inicial','nodo final')
+
+print("El árbol de peso mínimo: ", kruskal(red_ej)) #aplicamos este algoritmo para la red de la terminal 1 (red_1)
